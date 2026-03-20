@@ -24,7 +24,7 @@ public class AerolineaController {
                 pesoTotal = rs.getDouble("PesoTotal");
             }
         }
-
+//
         double limiteKg      = 0;
         double costoExceso   = 0;
         String nombreAerolinea = "";
