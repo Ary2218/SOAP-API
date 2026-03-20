@@ -3,21 +3,25 @@ package org.example.aerolineas;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
 import jakarta.jws.WebService;
+import jakarta.xml.ws.RequestWrapper;
 import org.example.models.ResultadoValidacion;
-import java.sql.SQLException;
 
-@WebService(serviceName = "AerolineaService")
+@WebService(
+        serviceName = "AerolineaService",
+        targetNamespace = "http://aerolineas.example.org/"
+)
 public class AerolineaService {
 
     private final AerolineaController controller = new AerolineaController();
 
     @WebMethod
+    @RequestWrapper(localName = "validarPeso", targetNamespace = "http://aerolineas.example.org/")
     public ResultadoValidacion validarPeso(
-            @WebParam(name = "viajeId")     int viajeId,
-            @WebParam(name = "aerolineaId") int aerolineaId
-    ) throws SQLException {
-        return controller.validar(viajeId, aerolineaId);
-
-
+            @WebParam(name = "idViaje",      targetNamespace = "http://aerolineas.example.org/") int idViaje,
+            @WebParam(name = "idaerolineas", targetNamespace = "http://aerolineas.example.org/") int idaerolineas
+    ) throws Exception {
+        System.out.println("idViaje recibido: " + idViaje);
+        System.out.println("idaerolineas recibido: " + idaerolineas);
+        return controller.validar(idViaje, idaerolineas);
     }
 }

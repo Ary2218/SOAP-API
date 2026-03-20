@@ -10,9 +10,9 @@ public class dbconfig {
     private static HikariDataSource dataSource;
 
     static {
-        config.setJdbcUrl("jdbc:mysql://192.168.1.73:3306/dbappviajes");
-        config.setUsername("usuario1");
-        config.setPassword("111");
+        config.setJdbcUrl("jdbc:mysql://localhost:3306/dbappviajes");
+        config.setUsername("root");
+        config.setPassword("123");
         config.setMaximumPoolSize(10);
         dataSource = new HikariDataSource(config);
     }

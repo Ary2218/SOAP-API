@@ -7,24 +7,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.URI;
+
 
 public class AerolineaController {
 
     private final DataSource ds = dbconfig.getDataSource();
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final String REST_URL = "http://localhost:3000";
 
-    public ResultadoValidacion validar(int viajeId, int aerolineaId) throws SQLException {
+    public ResultadoValidacion validar(int viajeId, int aerolineaId) throws Exception {
 
-        double pesoTotal = 0;
-        try (Connection con = ds.getConnection();
-             PreparedStatement ps = con.prepareStatement(
-                     "SELECT PesoTotal FROM viajes WHERE idViaje = ?")) {
-            ps.setInt(1, viajeId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                pesoTotal = rs.getDouble("PesoTotal");
-            }
-        }
-//
+        double pesoTotal = obtenerPesoDesdeREST(viajeId);
         double limiteKg      = 0;
         double costoExceso   = 0;
         String nombreAerolinea = "";
@@ -59,5 +56,40 @@ public class AerolineaController {
         }
 
         return resultado;
+    }
+
+    private double obtenerPesoDesdeREST(int idViaje) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(REST_URL + "/Viaje/" + idViaje))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request,
+                HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("Llamando a: " + REST_URL + "/Viaje/" + idViaje);
+        System.out.println("Status REST: " + response.statusCode());
+        System.out.println("Body REST: " + response.body());
+
+        if (response.statusCode() != 200) {
+            throw new RuntimeException("Viaje no encontrado en la API REST");
+        }
+
+        String body = response.body();
+        String buscar = "\"PesoTotal\":";
+        int inicio = body.indexOf(buscar) + buscar.length();
+
+        // Saltar espacios que pueda haber después de los dos puntos
+        while (inicio < body.length() && body.charAt(inicio) == ' ') {
+            inicio++;
+        }
+
+        int fin = body.indexOf(",", inicio);
+        if (fin == -1) fin = body.indexOf("}", inicio);
+
+        String valorStr = body.substring(inicio, fin).trim();
+        System.out.println("Valor extraído: " + valorStr);
+
+        return Double.parseDouble(valorStr);
     }
 }
