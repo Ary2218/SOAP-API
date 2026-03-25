@@ -24,4 +24,16 @@ public class AerolineaService {
         System.out.println("idaerolineas recibido: " + idaerolineas);
         return controller.validar(idViaje, idaerolineas);
     }
+
+    @WebMethod
+    @RequestWrapper(localName = "CrearAerolinea", targetNamespace = "http://aerolineas.example.org/")
+    public void CrearAerolinea(
+            @WebParam(name = "Nombre",targetNamespace = "http://aerolineas.example.org/" ) String Nombre,
+            @WebParam(name = "limitePeso",targetNamespace = "http://aerolineas.example.org/" ) double limitePeso,
+            @WebParam(name = "costoExcedente",targetNamespace = "http://aerolineas.example.org/" ) double costoExcedente)
+        throws Exception{
+        controller.CrearAerolinea(Nombre, limitePeso, costoExcedente);
+    }
+
+
 }

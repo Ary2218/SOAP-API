@@ -27,7 +27,8 @@ public class AerolineaController {
         String nombreAerolinea = "";
         try (Connection con = ds.getConnection();
              PreparedStatement ps = con.prepareStatement(
-                     "SELECT nombre, limitepeso, costokgexcedente FROM aerolineas WHERE idaerolineas = ?")) {
+                     "SELECT nombre, limitepeso, costokgexcedente FROM aerolineas WHERE idaerolineas = ?")
+        ) {
             ps.setInt(1, aerolineaId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -57,6 +58,60 @@ public class AerolineaController {
 
         return resultado;
     }
+
+    public void CrearAerolinea(String Nombre, double limitePeso, double costoExcedente) throws Exception {
+    try (Connection con = ds.getConnection();
+         PreparedStatement ps = con.prepareStatement(
+                 "INSERT INTO aerolineas (nombre, limitepeso, costokgexcedente) VALUES (?, ?, ?)")){
+        ps.setString(1,Nombre);
+        ps.setDouble(2,limitePeso);
+        ps.setDouble(3, costoExcedente);
+        ps.executeUpdate();
+         }
+    }
+
+    public void ActualizarNombreAerolinea(int idAerolinea, String Nombre) throws Exception {
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "UPDATE aerolineas SET nombre = ? WHERE idaerolineas = ?")){
+            ps.setString(1,Nombre);
+            ps.setInt(2,idAerolinea);
+            ps.executeUpdate();
+        }
+    }
+
+    public void ActualizarLimiteAerolinea(int idAerolinea, double Limite) throws Exception {
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "UPDATE aerolineas SET limitepeso = ? WHERE idaerolineas = ?")){
+            ps.setDouble(1,Limite);
+            ps.setInt(2,idAerolinea);
+            ps.executeUpdate();
+        }
+    }
+
+    public void ActualizarExcedenteAerolinea(int idAerolinea, double excedente) throws Exception {
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "UPDATE aerolineas SET costokgexcedente = ? WHERE idaerolineas = ?")){
+            ps.setDouble(1,excedente);
+            ps.setInt(2,idAerolinea);
+            ps.executeUpdate();
+        }
+    }
+
+    public void ActualizarCompleto(int idAeroLinea, String Nombre, double limitePeso, double costoExcedente) throws Exception{
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "UPDATE aerolineas SET nombre = ?, limitepeso = ?, costokgexcedente = ? WHERE idaerolineas = ?")){
+            ps.setString(1,Nombre);
+            ps.setDouble(2,limitePeso);
+            ps.setDouble(3,costoExcedente);
+            ps.setInt(4, idAeroLinea);
+            ps.executeUpdate();
+        }
+    }
+
 
     private double obtenerPesoDesdeREST(int idViaje) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
