@@ -10,7 +10,7 @@ public class dbconfig {
     private static HikariDataSource dataSource;
 
     static {
-        config.setJdbcUrl("jdbc:mysql://localhost:3306/dbappviajes");
+        config.setJdbcUrl("jdbc:mysql://localhost:3306/dbaerolineas");
         config.setUsername("root");
         config.setPassword("123");
         config.setMaximumPoolSize(10);

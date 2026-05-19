@@ -2,6 +2,7 @@ package org.example.aerolineas;
 
 import org.example.config.dbconfig;
 import org.example.models.ResultadoValidacion;
+import org.example.models.AerolineaDTO;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +12,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AerolineaController {
@@ -112,6 +115,52 @@ public class AerolineaController {
         }
     }
 
+    public List<AerolineaDTO> LeerAerolineas() throws Exception {
+        List<AerolineaDTO> aerolineas = new ArrayList<>();
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "SELECT idaerolineas, nombre, limitepeso, costokgexcedente FROM aerolineas")){
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                AerolineaDTO aerolinea = new AerolineaDTO(
+                    rs.getInt("idaerolineas"),
+                    rs.getString("nombre"),
+                    rs.getDouble("limitepeso"),
+                    rs.getDouble("costokgexcedente")
+                );
+                aerolineas.add(aerolinea);
+            }
+        }
+        return aerolineas;
+    }
+
+    public AerolineaDTO LeerAerolinea(int idAerolinea) throws Exception {
+        AerolineaDTO aerolinea = new AerolineaDTO();
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "SELECT idaerolineas, nombre, limitepeso, costokgexcedente FROM aerolineas WHERE idaerolineas = ?")){
+            ps.setInt(1, idAerolinea);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                aerolinea = new AerolineaDTO(
+                    rs.getInt("idaerolineas"),
+                    rs.getString("nombre"),
+                    rs.getDouble("limitepeso"),
+                    rs.getDouble("costokgexcedente")
+                );
+            }
+        }
+        return aerolinea;
+    }
+
+    public void BorrarAerolinea(int idAerolinea) throws Exception {
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "DELETE FROM aerolineas WHERE idaerolineas = ?")){
+            ps.setInt(1, idAerolinea);
+            ps.executeUpdate();
+        }
+    }
 
     private double obtenerPesoDesdeREST(int idViaje) throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
